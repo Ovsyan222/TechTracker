@@ -88,7 +88,6 @@ body {
     align-items: center;
     border-radius: var(--radius);
     transition: .5s width;
-    width: 40%;
 }
 
 .empty {
