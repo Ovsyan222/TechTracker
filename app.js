@@ -3,6 +3,9 @@ const content = document.querySelector('#content');
 const backdrop = document.querySelector('#backdrop');
 const progress = document.querySelector('#progress');
 const APP_TITLE = document.title;
+const form = document.querySelector('#form');
+const LS_KEY = 'MY_TECHS';
+const technologies = getState();
 
 content.addEventListener('click', (event) => {
     const data = event.target.dataset;
@@ -22,8 +25,43 @@ modal.addEventListener('change', (event) => {
     const tech = technologies.find(t => t.type === type);
     tech.done = event.target.checked;
 
+    saveState();
     init();
 });
+
+form.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const title = event.target.title;
+    const description = event.target.description;
+
+    if (isInvalid(title, description)) {
+        if (!title.value) title.classList.add('invalid');
+        if (!description.value) description.classList.add('invalid');
+
+        setTimeout(() => {
+            title.classList.remove('invalid');
+            description.classList.remove('invalid');
+        }, 2000)
+        return
+    }
+
+    const newTech = {
+        title: title.value,
+        description: description.value,
+        done: false,
+        type: title.value.toLowerCase()
+    }
+
+    technologies.push(newTech);
+    title.value = '';
+    description.value = '';
+    init();
+})
+
+function isInvalid(title, description) {
+    return !title.value || !description.value;
+}
 
 
 function openModal(html, title = APP_TITLE) {
@@ -97,21 +135,22 @@ function computeProgressPercent() {
     return Math.round((100 * doneCount) / technologies.length);
 }
 
-const technologies = [
-    {title: 'HTML', description: 'HTML text', type: 'html', done: true},
-    {title: 'CSS', description: 'CSS text', type: 'css', done: false},
-    {title: 'JavaScript', description: 'javaScript text', type: 'js', done: false},
-    {title: 'Git', description: 'Git text', type: 'git', done: false},
-    {title: 'React', description: 'React text', type: 'react', done: false}
-]
-
 function toCard(tech) {
     const doneClass = tech.done ? 'done' : '';
     return `
             <div class="card ${doneClass}" data-type="${tech.type}">
-                <h3 data-type="${tech.type}}">${tech.title}</h3>
+                <h3 data-type="${tech.type}">${tech.title}</h3>
             </div>
         `
+}
+
+function saveState() {
+    localStorage.setItem(LS_KEY, JSON.stringify(technologies));
+}
+
+function getState() {
+    const raw = localStorage.getItem(LS_KEY);
+    return raw ? JSON.parse(raw) : [];
 }
 
 init();
