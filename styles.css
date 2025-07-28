@@ -81,7 +81,6 @@ body {
     left: 0;
     bottom: 0;
     top: 0;
-    background: var(--orange);
     color: #fff;
     display: flex;
     justify-content: center;
